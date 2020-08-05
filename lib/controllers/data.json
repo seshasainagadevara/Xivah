@@ -1,0 +1,320 @@
+[
+    {update_id: 448680836, callback_query: {id: 2643919603844710183, 
+        from: {id: 615585503, 
+            is_bot: false,
+             first_name: Seshasai,
+              last_name: Indian,
+               username: seshasai49,
+                language_code: en
+            }, message: {message_id: 280, from: {id: 1311479067, is_bot: true, first_name: Vedik Bharath, username: VedicBharathBot
+                }, chat: {id: 615585503, first_name: Seshasai, last_name: Indian, username: seshasai49, type: private
+                }, date: 1595666441, text: Namaskaram 🙏 Seshasai ! select a language of your choice 😀., entities: [
+                    {offset: 0, length: 14, type: bold
+                    },
+                    {offset: 14, length: 47, type: bold
+                    },
+                    {offset: 14, length: 10, type: italic
+                    }
+                ], reply_markup: {inline_keyboard: [
+                        [
+                            {text: తెలుగు, callback_data: te
+                            }
+                        ],
+                        [
+                            {text: English, callback_data: en
+                            }
+                        ]
+                    ]
+                }
+            }, chat_instance: 3578391225102559026, data: te
+        }
+    },
+    {
+        "update_id": 448680790,
+        "message": {
+            "message_id": 234,
+            "from": {
+                "id": 615585503,
+                "is_bot": false,
+                "first_name": "Seshasai",
+                "last_name": "Indian",
+                "username": "seshasai49",
+                "language_code": en
+            },
+            "chat": {
+                "id": 615585503,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": "seshasai49",
+                "type": private
+            },
+            "date": 1595150855,
+            "text": /start,
+            "entities": [
+                {
+                    "offset": 0,
+                    "length": 6,
+                    "type": bot_command
+                }
+            ]
+        }
+    },
+    {
+        "update_id": 448680791,
+        "message": {
+            "message_id": 235,
+            "from": {
+                "id": 615585503,
+                "is_bot": false,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "language_code": en
+            },
+            "chat": {
+                "id": 615585503,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "type": private
+            },
+            "date": 1595150867,
+            "text": Hello
+        }
+    },
+    {
+        "update_id": 448680792,
+        "message": {
+            "message_id": 236,
+            "from": {
+                "id": 615585503,
+                "is_bot": false,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "language_code": en
+            },
+            "chat": {
+                "id": 615585503,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "type": private
+            },
+            "date": 1595150889,
+            "photo": [
+                {
+                    "file_id": AgACAgUAAxkBAAPsXxQSKZZQ3pYq0OFR2H9yxaJVXpYAAtypMRvPlKBUf6ah0bobXcZ-5uZrdAADAQADAgADbQADcL4AAhoE,
+                    "file_unique_id": AQADfubma3QAA3C-AAI,
+                    "file_size": 10927,
+                    "width": 320,
+                    "height": 240
+                },
+                {
+                    "file_id": AgACAgUAAxkBAAPsXxQSKZZQ3pYq0OFR2H9yxaJVXpYAAtypMRvPlKBUf6ah0bobXcZ-5uZrdAADAQADAgADeAADcb4AAhoE,
+                    "file_unique_id": AQADfubma3QAA3G-AAI,
+                    "file_size": 50292,
+                    "width": 800,
+                    "height": 600
+                },
+                {
+                    "file_id": AgACAgUAAxkBAAPsXxQSKZZQ3pYq0OFR2H9yxaJVXpYAAtypMRvPlKBUf6ah0bobXcZ-5uZrdAADAQADAgADeQADcr4AAhoE,
+                    "file_unique_id": AQADfubma3QAA3K-AAI,
+                    "file_size": 85511,
+                    "width": 1280,
+                    "height": 960
+                }
+            ]
+        }
+    },
+    {
+        "update_id": 448680793,
+        "message": {
+            "message_id": 237,
+            "from": {
+                "id": 615585503,
+                "is_bot": false,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "language_code": en
+            },
+            "chat": {
+                "id": 615585503,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "type": private
+            },
+            "date": 1595150910,
+            "location": {
+                "latitude": 16.966045,
+                "longitude": 82.22489
+            }
+        }
+    },
+    {
+        "update_id": 448680794,
+        "message": {
+            "message_id": 238,
+            "from": {
+                "id": 615585503,
+                "is_bot": false,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "language_code": en
+            },
+            "chat": {
+                "id": 615585503,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "type": private
+            },
+            "date": 1595150931,
+            "document": {
+                "file_name": tip120.pdf,
+                "mime_type": application/pdf,
+                "file_id": BQACAgUAAxkBAAPuXxQSU5iczTi6d60mdF0Di1sKd5cAAhABAALPlKBUUPxxiYlO3qYaBA,
+                "file_unique_id": AgADEAEAAs-UoFQ,
+                "file_size": 623857
+            }
+        }
+    },
+    {
+        "update_id": 448680795,
+        "message": {
+            "message_id": 239,
+            "from": {
+                "id": 615585503,
+                "is_bot": false,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "language_code": en
+            },
+            "chat": {
+                "id": 615585503,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "type": private
+            },
+            "date": 1595150943,
+            "contact": {
+                "phone_number": +919912449963,
+                "first_name": Babu idea,
+                "vcard": BEGIN:VCARD
+VERSION: 3.0
+N:Idea;Narsu;;;
+FN:Narsu Idea
+TEL;TYPE=CELL: 991-244-9963
+TEL;TYPE=WhatsApp:+919912449963
+END:VCARD,
+                "user_id": 982088676
+            }
+        }
+    },
+    {
+        "update_id": 448680796,
+        "message": {
+            "message_id": 240,
+            "from": {
+                "id": 615585503,
+                "is_bot": false,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "language_code": en
+            },
+            "chat": {
+                "id": 615585503,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "type": private
+            },
+            "date": 1595150975,
+            "audio": {
+                "duration": 96,
+                "mime_type": audio/mp3,
+                "title": Bulliguvaa_-_Official_Video_Song_|_2.0_[Telugu
+                ]_|_Rajinikanth_|…,
+                "performer": <unknown>,
+                "file_id": CQACAgUAAxkBAAPwXxQSfgHRw8Gnp4ltWvnJ1u5B2nQAAhEBAALPlKBUa5FjxoGoOfsaBA,
+                "file_unique_id": AgADEQEAAs-UoFQ,
+                "file_size": 3849356
+            }
+        }
+    },
+    {
+        "update_id": 448680797,
+        "message": {
+            "message_id": 241,
+            "from": {
+                "id": 615585503,
+                "is_bot": false,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "language_code": en
+            },
+            "chat": {
+                "id": 615585503,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "type": private
+            },
+            "date": 1595150978,
+            "poll": {
+                "id": 6098037512238792706,
+                "question": Hi,
+                "options": [
+                    {
+                        "text": Yes,
+                        "voter_count": 0
+                    },
+                    {
+                        "text": No,
+                        "voter_count": 0
+                    }
+                ],
+                "total_voter_count": 0,
+                "is_closed": false,
+                "is_anonymous": false,
+                "type": regular,
+                "allows_multiple_answers": false
+            }
+        }
+    },
+    {
+        "update_id": 448680798,
+        "message": {
+            "message_id": 242,
+            "from": {
+                "id": 615585503,
+                "is_bot": false,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "language_code": en
+            },
+            "chat": {
+                "id": 615585503,
+                "first_name": Seshasai,
+                "last_name": Indian,
+                "username": seshasai49,
+                "type": private
+            },
+            "date": 1595151010,
+            "text": 😏😜👌
+        }
+    },
+
+
+
+
+
+]
