@@ -27,6 +27,8 @@ class LocationHandler {
       'reply_markup': RemoveReplyKeyboard(true).removeReplyKeyboard()
     });
 
+
+
     await _databaseConnect.openDBConnection().then((database) async {
 //      await database.collection('people').aggregate([
 //        {

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:Xivah/controllers/database/database_connection.dart';
 import 'package:Xivah/controllers/replySender.dart';
+import 'package:Xivah/controllers/time_difference_checker.dart';
 import 'package:Xivah/structures/MsgStrucutures/create_user_model.dart';
 import 'package:Xivah/structures/inlineKeyboards/inlinekeyboard_button.dart';
 import 'package:Xivah/structures/replykeyboards/keyboard_button.dart';
@@ -28,7 +29,7 @@ class StartCommand {
     await _db.openDBConnection().then((database) {
       _db.checkUserRegistration(senderId, 'people').then((timeStamp) async {
         if (timeStamp == null) {
-         return await _db
+          return await _db
               .createUser(
                   User(
                           name: name,
@@ -55,28 +56,25 @@ class StartCommand {
               await database.close();
             }
           }).catchError((e) => print('start command error===> $e'));
-        }else{
+        } else {
+          print("exists");
+          //check for timestamp and ask for location and update db
 
-
-
-
+          await ReplySender(
+              port: port,
+              chatId: chatId,
+              botUrl: botUrl,
+              text:
+                  ' Dhanyavadh 🙏🏼 <i>${name}</i> 🥰 , welcome back! \n Hey!🖐 It\'s my pleasure to talk with you again. \n Send your location📍, many stores are waiting for your order.😎',
+              reply_keyboard_buttons: [
+                KeyboardButtons(
+                  'Send Location',
+                  request_location: true,
+                )
+              ]).sendReply();
         }
-
-//        print("exists");
-//        await ReplySender(
-//            port: port,
-//            chatId: chatId,
-//            botUrl: botUrl,
-//            text:
-//                ' Dhanyavadh 🙏🏼 <i>${name}</i> 🥰 , welcome back! \n Hey!🖐 It\'s my pleasure to talk with you again. \n Send your location📍, many stores are waiting for your order.😎',
-//            reply_keyboard_buttons: [
-//              KeyboardButtons(
-//                'Send Location',
-//                request_location: true,
-//              )
-//            ]).sendReply();
-//        await database.close();
-//        return ;
+        await database.close();
+        return;
       });
     });
     // ask for location input
