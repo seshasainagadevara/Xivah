@@ -31,16 +31,16 @@ class DatabaseConnect {
     });
   }
 
-  updateUser(Map query, String collection) async {
-    //await _db.collection(collection).update(selector, document)
-  }
-  readUser(Map query, String collection) async {
-    await _db
-        .collection(collection)
-        .findOne(query)
-        .then((value) => print(value))
-        .catchError((e) => print(e));
-  }
+//  updateUser(Map query, String collection) async {
+//    //await _db.collection(collection).update(selector, document)
+//  }
+//  readUser(Map query, String collection) async {
+//    await _db
+//        .collection(collection)
+//        .findOne(query)
+//        .then((value) => print(value))
+//        .catchError((e) => print(e));
+//  }
 
   Future<dynamic> checkUserRegistration(num id, String collection) async {
     return await _db

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:Xivah/controllers/database/database_connection.dart';
 import 'package:Xivah/controllers/replySender.dart';
-import 'package:Xivah/controllers/time_difference_checker.dart';
+
 import 'package:Xivah/structures/MsgStrucutures/create_user_model.dart';
 import 'package:Xivah/structures/inlineKeyboards/inlinekeyboard_button.dart';
 import 'package:Xivah/structures/replykeyboards/keyboard_button.dart';
@@ -41,81 +41,54 @@ class StartCommand {
               .then((value) async {
             if (value) {
               print('user created');
-              await ReplySender(
-                  port: port,
-                  chatId: chatId,
-                  botUrl: botUrl,
-                  text:
-                      ' Namaskaram 🙏🏼 <i>${name}</i> 😃, welcome to Xivah bot. \n Hey! It\'s awesome when you find and order things around you. \n Send your location📍, to make that happen.',
-                  reply_keyboard_buttons: [
-                    KeyboardButtons('Send Location', request_location: true)
-                  ]).sendReply();
-              await database.close();
+              _sendCategories(
+                database,
+                text:
+                    ' Namaskaram 🙏🏼 <i>${name}</i> garu😎. Select a category of your choice 👇',
+              );
+//              Performing homam, is most beneficial for you and the people, animals, nature around you.
             } else {
               print('use r not created failure');
               await database.close();
             }
           }).catchError((e) => print('start command error===> $e'));
         } else {
+          _sendCategories(
+            database,
+            text:
+                ' Dhanyavadh 🙏🏼 <i>${name}</i> garu😎. \n It\'s our pleasure to see you again😃 , Order a homam and immunize your body 💪 ',
+          );
           print("exists");
-          //check for timestamp and ask for location and update db
-
-          await ReplySender(
-              port: port,
-              chatId: chatId,
-              botUrl: botUrl,
-              text:
-                  ' Dhanyavadh 🙏🏼 <i>${name}</i> 🥰 , welcome back! \n Hey!🖐 It\'s my pleasure to talk with you again. \n Send your location📍, many stores are waiting for your order.😎',
-              reply_keyboard_buttons: [
-                KeyboardButtons(
-                  'Send Location',
-                  request_location: true,
-                )
-              ]).sendReply();
         }
-        await database.close();
-        return;
       });
     });
-    // ask for location input
-    // register user in db
-//    await ReplySender(
-//        port: port,
-//        chatId: chatId,
-//        botUrl: botUrl,
-//        text:
-//            ' Namaskaram 🙏🏼 <i>${name}</i> 😃, welcome to Xivah bot. \n Hey! It\'s awesome when you find and order things around you. \n Send your location📍, to make that happen.',
-//        reply_keyboard_buttons: [KeyboardButtons('Send Location', request_location: true)]).sendReply().then((value) => );
-//
-//    await _db.openDBConnection().then((database) async {
-//      if (database != null) {
-//        await database
-//            .collection(_collection)
-//            .find(where.excludeFields(['items']))
-//            .transform(StreamTransformer<Map<String, dynamic>,
-//                    InlineKeyboardButton>.fromHandlers(
-//                handleData: (data, sink) => sink.add(
-//                    InlineKeyboardButton.categoryFromJson(data,
-//                        addition: _collection)),
-//                handleError: (error, stacktrace, sink) => sink.add(error),
-//                handleDone: (sink) async {
-//                  sink.close();
-//                }))
-//            .toList()
-//            .then((buttons) async => await ReplySender(
-//                    port: port,
-//                    chatId: chatId,
-//                    botUrl: botUrl,
-//                    text:
-//                        ' Namaskaram 🙏🏼 <i>${name}</i>😎. Select a category of your choice 👇',
-//                    buttons: buttons)
-//                .sendReply())
-//            .then((value) async {})
-//            .catchError((error) async {
-//          print('error came at start command ${error} ');
-//          await database.close();
-//        });
-//      }
-//    });
+  }
+
+  _sendCategories(Db database, {String text}) async {
+    await database
+        .collection(_collection)
+        .find(where.excludeFields(['items']))
+        .transform(StreamTransformer<Map<String, dynamic>,
+                InlineKeyboardButton>.fromHandlers(
+            handleData: (data, sink) => sink.add(
+                InlineKeyboardButton.categoryFromJson(data,
+                    addition: _collection)),
+            handleError: (error, stacktrace, sink) => sink.add(error),
+            handleDone: (sink) async {
+              sink.close();
+            }))
+        .toList()
+        .then((buttons) async => await ReplySender(
+                port: port,
+                chatId: chatId,
+                botUrl: botUrl,
+                text: text,
+                buttons: buttons)
+            .sendReply())
+        .catchError((error) async {
+      print('error came at start command ${error} ');
+      await database.close();
+    });
+    await database?.close();
   }
 }

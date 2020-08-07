@@ -12,12 +12,12 @@ class ProductTile {
             .map<InlineKeyboardButton>((item) => InlineKeyboardButton(
                 item['text'],
                 callback_data: item['data'],
-                pay: item['text'].contains('Buy') ? true : false))
+                pay: item['text'].contains('Pay') ? true : false))
             .toList())
-        .followedBy(_buttonData['qty']
-            .map<InlineKeyboardButton>((qt) => RowButtons(
-                text: qt['text'].toString(), callback_data: qt['data']))
-            .toList())
+//        .followedBy(_buttonData['qty']
+//            .map<InlineKeyboardButton>((qt) => RowButtons(
+//                text: qt['text'].toString(), callback_data: qt['data']))
+//            .toList())
         .toList();
   }
 }

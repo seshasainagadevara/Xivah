@@ -42,7 +42,7 @@ class CategoryCallbackHandler {
     });
   }
 
-  void processItems({String itemId, num qty=1}) async {
+  void processItems({String itemId, num qty = 1}) async {
     await ClientForReply().replyWith(
         url: '${_botUrl}/deleteMessage',
         port: port,
@@ -73,31 +73,36 @@ class CategoryCallbackHandler {
           var product_buttons = {
             'buttons': [
               {
-                'text': 'Buy now',
+                'text': 'Pay ₹${_product.product_price}',
                 'data': 'buy:${_product.cat_id}:${_product.product_id}'
               },
-              {
-                'text': 'Add to cart',
-                'data': 'add:${_product.cat_id}:${_product.product_id}'
-              },
+//              {
+//                'text': 'Add to cart',
+//                'data': 'add:${_product.cat_id}:${_product.product_id}'
+//              },
               {'text': 'Menu', 'data': 'categories:${_product.cat_id}'},
             ],
-            'qty': List.generate(
-                5,
-                (index) => {
-                      'text': index + 1,
-                      'data':
-                          'qty:${_product.cat_id}:${_product.product_id}:${index + 1}'
-                    })
+//            'qty': List.generate(
+//                5,
+//                (index) => {
+//                      'text': index + 1,
+//                      'data':
+//                          'qty:${_product.cat_id}:${_product.product_id}:${index + 1}'
+//                    })
           };
+
           await ReplySender(
                   port: port,
                   chatId: chatId,
                   botUrl: _botUrl,
-                  text: "${_product.product_name} \n"
-                      "Rs. ${_product.product_price * qty}/- \n"
-                      "Quantity: ${_product.product_qty*qty} \n"
-                      "You could also choose quantity 🔢",
+                  text: "<strong> <u>${_product.product_name}.</u></strong> \n\n"
+                      "  ${_product.description.padLeft(10, '  ')}\n\n"
+                      "<b>Duration: ${_product.duration} Hours.</b>\n\n"
+                      "<b>Priests: ${_product.priests}.</b>\n\n"
+                      "<b><i>Rs. ${_product.product_price}/- </i></b>\n",
+//                      "<b><i>Rs. ${_product.product_price * qty}/- </i></b>\n",
+//                      "Quantity: ${_product.product_qty*qty} \n"
+//                      "You could also choose quantity 🔢",
                   buttons: ProductTile(product_buttons).generateButtons())
               .sendReply();
         }).catchError((error) => print('error at category_handler: ${error}'));

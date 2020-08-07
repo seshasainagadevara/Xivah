@@ -10,23 +10,25 @@ class ReplySender {
   final num chatId;
   final String text;
   final List<InlineKeyboardButton> buttons;
-  final List<KeyboardButtons> reply_keyboard_buttons;
+  //final List<KeyboardButtons> reply_keyboard_buttons;
   String botUrl;
   final num port;
   SendMessageData _messageData;
-  ReplySender(
-      {this.chatId,
-      this.text,
-      this.buttons,
-      this.port,
-      this.botUrl,
-      this.reply_keyboard_buttons}) {
+  ReplySender({
+    this.chatId,
+    this.text,
+    this.buttons,
+    this.port,
+    this.botUrl,
+    //  this.reply_keyboard_buttons
+  }) {
     botUrl += '/sendMessage';
     _messageData = SendMessageData(chatId, text,
-        parse_mode: MsgParseMode.HTML,
-        keyboard: buttons == null
-            ? ReplyKeyboard(reply_keyboard_buttons, one_time_keyboard: true)
-            : InlineKeyboard(buttons));
+        parse_mode: MsgParseMode.HTML, keyboard: buttons==null?null:InlineKeyboard(buttons)
+        //buttons == null
+        // ? ReplyKeyboard(reply_keyboard_buttons, one_time_keyboard: true)
+        //    :
+        );
   }
 
   Future<void> sendReply() async {
