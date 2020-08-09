@@ -1,27 +1,31 @@
 import 'dart:async';
 
+import 'package:Xivah/client/client_for_reply.dart';
+import 'package:Xivah/controllers/callBackHandlers/sendCategories.dart';
 import 'package:Xivah/controllers/database/database_connection.dart';
 import 'package:Xivah/controllers/replySender.dart';
 
 import 'package:Xivah/structures/MsgStrucutures/create_user_model.dart';
-import 'package:Xivah/structures/inlineKeyboards/inlinekeyboard_button.dart';
-import 'package:Xivah/structures/replykeyboards/keyboard_button.dart';
-import 'package:Xivah/structures/replykeyboards/reply_keyboard.dart';
+
 import 'package:mongo_dart/mongo_dart.dart';
 
 class StartCommand {
-  num chatId, port, senderId;
+  num chatId, port, senderId, msgId;
   String botUrl, name, username, type;
   DatabaseConnect _db;
   final String _collection = 'categories';
+  SendCategories _sendCategories;
+
   StartCommand(
       {this.chatId,
       this.botUrl,
       this.name,
+      this.msgId,
       this.username,
       this.type,
       this.port,
       this.senderId}) {
+    _sendCategories = SendCategories();
     _db = DatabaseConnect();
   }
 
@@ -41,54 +45,53 @@ class StartCommand {
               .then((value) async {
             if (value) {
               print('user created');
-              _sendCategories(
-                database,
+              await ReplySender(
+                port: port,
+                chatId: chatId,
+                botUrl: botUrl,
                 text:
-                    ' Namaskaram 🙏🏼 <i>${name}</i> garu😎. Select a category of your choice 👇',
-              );
-//              Performing homam, is most beneficial for you and the people, animals, nature around you.
+                    ' Namaskaram 🙏🏼 <i>${name}</i> 😃, welcome to vedik bharath bot. \n Hey! It\'s awesome when you <strong>send your location</strong>📍, for better discovery.',
+//                  reply_keyboard_buttons: [
+//                    KeyboardButtons('Send Location', request_location: true)
+//                  ]
+              ).sendReply();
+              await database.close();
             } else {
               print('use r not created failure');
               await database.close();
             }
           }).catchError((e) => print('start command error===> $e'));
-        } else {
-          _sendCategories(
-            database,
-            text:
-                ' Dhanyavadh 🙏🏼 <i>${name}</i> garu😎. \n It\'s our pleasure to see you again😃 , Order a homam and immunize your body 💪 ',
-          );
-          print("exists");
+        }
+
+        //check for timestamp and ask for location and update db
+        else {
+          if (((Timestamp().seconds - (timeStamp as Timestamp).seconds) ~/ 60) >
+              30) {
+            await _db.openDBConnection().then((database) => database
+                .collection('people')
+                .update(where.eq('userId', senderId),
+                    modify.set('modified', Timestamp()))
+                .then((value) async => await database.close())
+                .catchError((e) => print("error updating time stamp ${e}")));
+            await ReplySender(
+              port: port,
+              chatId: chatId,
+              botUrl: botUrl,
+              text:
+                  ' Dhanyavadh 🙏🏼 <i>${name}</i> 🥰 , welcome back! \n Hey!🖐 It\'s my pleasure to talk with you again. \n <strong> Send your location</strong>📍, for accurate service discovery.😎',
+//              reply_keyboard_buttons: [
+//                KeyboardButtons(
+//                  'Send Location',
+//                  request_location: true,
+//                )
+//              ]
+            ).sendReply();
+          } else {
+            await _sendCategories.sendCategories(
+                database, chatId, name, botUrl, _collection, port, msgId);
+          }
         }
       });
     });
-  }
-
-  _sendCategories(Db database, {String text}) async {
-    await database
-        .collection(_collection)
-        .find(where.excludeFields(['items']))
-        .transform(StreamTransformer<Map<String, dynamic>,
-                InlineKeyboardButton>.fromHandlers(
-            handleData: (data, sink) => sink.add(
-                InlineKeyboardButton.categoryFromJson(data,
-                    addition: _collection)),
-            handleError: (error, stacktrace, sink) => sink.add(error),
-            handleDone: (sink) async {
-              sink.close();
-            }))
-        .toList()
-        .then((buttons) async => await ReplySender(
-                port: port,
-                chatId: chatId,
-                botUrl: botUrl,
-                text: text,
-                buttons: buttons)
-            .sendReply())
-        .catchError((error) async {
-      print('error came at start command ${error} ');
-      await database.close();
-    });
-    await database?.close();
   }
 }

@@ -22,6 +22,8 @@ class TelegramController {
         data['message']['entities'].forEach((e) {
           if (e['type'].contains('bot_command')) {
             _postRequestProcessor.processBotCommand(data);
+          } else if (e['type'].contains('phone_number')) {
+            _postRequestProcessor.processPhoneNumber(data);
           }
         });
       } else {

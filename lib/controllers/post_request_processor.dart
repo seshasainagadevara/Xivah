@@ -1,11 +1,13 @@
 import 'package:Xivah/client/client_for_reply.dart';
 import 'package:Xivah/controllers/callBackHandlers/addToCartHandler.dart';
 import 'package:Xivah/controllers/callBackHandlers/sendChatAction.dart';
+import 'package:Xivah/controllers/commands/SendMail.dart';
 import 'package:Xivah/controllers/database/database_connection.dart';
 import 'package:Xivah/controllers/replySender.dart';
 import 'package:Xivah/structures/MsgStrucutures/msg_model.dart';
 import 'package:Xivah/structures/inlineKeyboards/answer_call_back_query.dart';
 import 'package:Xivah/structures/inlineKeyboards/callback_query.dart';
+import 'package:Xivah/structures/inlineKeyboards/inline_keyboard.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'callBackHandlers/category_callback_handler.dart';
@@ -47,6 +49,7 @@ class PostRequestProcessor {
           await StartCommand(
                   chatId: msg.chatId,
                   username: msg.userName,
+                  msgId: msg.msgId,
                   senderId: msg.senderId,
                   botUrl: _apiUrl,
                   port: _details[0],
@@ -78,7 +81,30 @@ class PostRequestProcessor {
           break;
 
         case '/orders':
-
+          await _databaseConnect.openDBConnection().then((database) async {
+            await database
+                .collection('orders')
+                .find(where
+                    .eq('userId', msg.senderId)
+                    .fields(['orderItem', 'price', 'date']))
+                .toList()
+                .then((value) async {
+              print(value);
+              await database.close();
+              var str = '';
+              value.forEach((element) {
+                str =
+                    "${str.trim()}${element['orderItem']}\nprice: ${element['price']}\non: ${element['date'].split('.')[0].replaceAll('T', ' Time: ')}\n\n===";
+              });
+              await ReplySender(
+                      chatId: msg.chatId,
+                      port: _details[0],
+                      botUrl: _apiUrl,
+                      text:
+                          "<strong> Hey, these are your orders..</strong>\n\n ${str}")
+                  .sendReply();
+            });
+          }).catchError((e) => print('erro at order: ${e}'));
 
           break;
         case '/science':
@@ -99,6 +125,90 @@ class PostRequestProcessor {
     }
   }
 
+  void processPhoneNumber(Map request) async {
+    var msg = MsgModel.readFromMap(request);
+    Map loc;
+    await SendChatAction(url: _apiUrl, port: _details[0], chatId: msg.chatId)
+        .sendAction();
+    if (msg.message.trim().contains(RegExp(r'^([0-9]){10}$'))) {
+      return _databaseConnect.openDBConnection().then((database) {
+        database
+            .collection('people')
+            .update(where.eq('userId', msg.senderId),
+                modify.set('phone', msg.message.trim()))
+            .then((_) async {
+          await database.collection('orders').update(
+              where.eq('userId', msg.senderId),
+              modify.set('phone', msg.message.trim()));
+          await database
+              .collection('people')
+              .findOne(where
+                  .eq('userId', msg.senderId)
+                  .fields(['location.coordinates']))
+              .then((value) async {
+            loc = value;
+            await database
+                .collection('orders')
+                .update(
+                    where.eq('userId', msg.senderId),
+                    modify.set('location', {
+                      'longitude': loc['location']['coordinates'][0],
+                      'latitude': loc['location']['coordinates'][1]
+                    }))
+                .then((_) async => await database.collection('orders').update(
+                    where.eq('userId', msg.senderId),
+                    modify.set('date', DateTime.now().toIso8601String())))
+                .then((value) async => await database
+                    .collection('orders')
+                    .update(where.eq('userId', msg.senderId),
+                        modify.set('name', msg.firstName)));
+          }).then((_) async {
+            await SendMail(
+              name: msg.firstName,
+              userId: msg.senderId,
+              item: 'Homam dhanvantari',
+              date: DateTime.now().toIso8601String(),
+              location: {
+                'longitude': loc['location']['coordinates'][0],
+                'latitude': loc['location']['coordinates'][1]
+              },
+              phone: msg.message,
+            ).sendMailMe();
+          });
+          await ClientForReply().replyWith(
+              url: '${_apiUrl}/deleteMessage',
+              port: _details[0],
+              data: {
+                'chat_id': msg.chatId,
+                'message_id': msg.msgId - 1,
+              });
+          await ClientForReply().replyWith(
+              url: '${_apiUrl}/deleteMessage',
+              port: _details[0],
+              data: {
+                'chat_id': msg.chatId,
+                'message_id': msg.msgId,
+              });
+          await ReplySender(
+            botUrl: _apiUrl,
+            port: _details[0],
+            chatId: msg.chatId,
+            text:
+                "<strong>Your order has been placed successfully 🥳!! thank you very much 🧘<i>${msg.firstName} garu</i> for pioneering great vedic science</strong>,\nour VedikBharath executive would be in contact with you.",
+          ).sendReply();
+          await database.close();
+        });
+      }).catchError((e) => print('error storing phone number ${e}'));
+    }
+
+    await ReplySender(
+      botUrl: _apiUrl,
+      port: _details[0],
+      chatId: msg.chatId,
+      text: 'Hey, please send valid phone number.</strong>',
+    ).sendReply();
+  }
+
   void processNormalText(Map request) async {
     var msg = MsgModel.readFromMap(request);
     await SendChatAction(url: _apiUrl, port: _details[0], chatId: msg.chatId)
@@ -107,7 +217,7 @@ class PostRequestProcessor {
     if (msg.message.contains('feedback:') ||
         msg.message.contains('feedback') ||
         msg.message.contains('feed back') ||
-        msg.message.contains(RegExp(r'(feedback)'))) {
+        msg.message.contains(RegExp(r'(feedback)', caseSensitive: false))) {
       return _databaseConnect.openDBConnection().then((database) {
         database.collection('feedbacks').insert({
           'username': msg.userName,
@@ -116,22 +226,31 @@ class PostRequestProcessor {
           'chatId': msg.chatId,
           'typeOf': msg.typeOfChat,
           'feedback': msg.message,
-        }).then((value) async => await ReplySender(
-              botUrl: _apiUrl,
-              port: _details[0],
-              chatId: msg.chatId,
-              text:
-                  'Dhanyavadhamulu🙏 for your valuable feedback, it means a lot to us.😍🥰 ',
-            ).sendReply());
+        }).then((value) async {
+          await database.close();
+          await ReplySender(
+            botUrl: _apiUrl,
+            port: _details[0],
+            chatId: msg.chatId,
+            text:
+                'Dhanyavadhamulu🙏 for your valuable feedback, it means a lot to us.😍🥰 ',
+          ).sendReply();
+        });
       });
       //store feedbackin db and send thanks for your feedback
 
     }
+    await ClientForReply()
+        .replyWith(url: '${_apiUrl}/deleteMessage', port: _details[0], data: {
+      'chat_id': msg.chatId,
+      'message_id': msg.msgId,
+    });
     return await ReplySender(
       botUrl: _apiUrl,
       port: _details[0],
       chatId: msg.chatId,
-      text: 'Hey, you could try these options:\n <strong> /start - Start ordering Homam </strong>',
+      text:
+          'Hey, you could try these options:\n <strong> /start - Start ordering Homam </strong>',
     ).sendReply();
   }
 
@@ -151,7 +270,22 @@ class PostRequestProcessor {
     var _collectionDetails = _callback.data.split(':');
 
     if (_collectionDetails.length > 2) {
-      if (_collectionDetails[0].contains('buy')) {}
+      if (_collectionDetails[0].contains('buy')) {
+        await CategoryCallbackHandler(_collectionDetails[1], _apiUrl,
+                _callback.chatId, _callback.msgId, _details[0])
+            .processItems(
+                itemId: _collectionDetails[2],
+                type: 'buy',
+                senderId: _callback.userId.id);
+
+        await ReplySender(
+          botUrl: _apiUrl,
+          port: _details[0],
+          chatId: _callback.chatId,
+          text:
+              '🥰 Great! Inorder to complete the booking, just send your working mobile number, \n without +91.\n (just type only mobile number)',
+        ).sendReply();
+      }
 //      if (_collectionDetails[0].contains('qty')) {
 //        await _databaseConnect.openDBConnection().then((database) async {
 //          await database

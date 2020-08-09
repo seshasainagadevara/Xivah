@@ -3,13 +3,14 @@ class MsgModel {
   final bool isBot;
   final String firstName, lastName, userName;
   final String typeOfChat;
-  final num timeStamp;
+  final num timeStamp, msgId;
   final String message;
 
   MsgModel(
       this.senderId,
       this.chatId,
       this.isBot,
+      this.msgId,
       this.firstName,
       this.lastName,
       this.userName,
@@ -22,6 +23,7 @@ class MsgModel {
         object["message"]["from"]["id"] as num,
         object["message"]["chat"]["id"] as num,
         object["message"]["from"]["is_bot"] as bool,
+        object['message']['message_id'] as num,
         object["message"]["from"]["first_name"] as String,
         object["message"]["from"]["last_name"] as String,
         object["message"]["from"]["username"] as String,

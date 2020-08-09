@@ -31,10 +31,11 @@ class CategoryCallbackHandler {
                     text: '${value.text}',
                     buttons: value.buttons)
                 .sendReply())
-            .then((value) async => await ClientForReply().replyWith(
+            .then((value) async { await ClientForReply().replyWith(
                 url: '${_botUrl}/deleteMessage',
                 port: port,
-                data: {'chat_id': chatId, 'message_id': msgId}))
+                data: {'chat_id': chatId, 'message_id': msgId});
+            })
             .catchError(
                 (error) => print('error at category_handler: ${error}'));
         await database.close();
@@ -42,7 +43,8 @@ class CategoryCallbackHandler {
     });
   }
 
-  void processItems({String itemId, num qty = 1}) async {
+  void processItems(
+      {String itemId, num qty = 1, String type = '', num senderId}) async {
     await ClientForReply().replyWith(
         url: '${_botUrl}/deleteMessage',
         port: port,
@@ -69,19 +71,44 @@ class CategoryCallbackHandler {
         ], cursor: {
           'batchSize': 1
         }).then((cursor) async {
+
           var _product = CallbackCursorParser.fromJSON(cursor);
-          var product_buttons = {
-            'buttons': [
-              {
-                'text': 'Pay ₹${_product.product_price}',
-                'data': 'buy:${_product.cat_id}:${_product.product_id}'
-              },
+          if (type.contains('buy')) {
+            await database.collection('people').update(
+                where.eq('userId', senderId),
+                modify.push('orders', {
+                  'order_items': [
+                    {
+                      'item': _product.product_name,
+                      'price': _product.product_price,
+                    }
+                  ],
+                  'order_date': DateTime.now().toIso8601String(),
+                  'order_total': _product.product_price,
+                  'payment': 'offline'
+                })).then((value) async{
+                 await database.collection('orders').insert({
+                    'userId': senderId,
+                    'orderItem': _product.product_name,
+                    'price': _product.product_price,
+                    'phone':'',
+                    'priests':_product.priests,
+
+                  });
+            }).catchError((e)=> print("error storing data"));
+          } else {
+            var product_buttons = {
+              'buttons': [
+                {
+                  'text': 'Order now',
+                  'data': 'buy:${_product.cat_id}:${_product.product_id}'
+                },
 //              {
 //                'text': 'Add to cart',
 //                'data': 'add:${_product.cat_id}:${_product.product_id}'
 //              },
-              {'text': 'Menu', 'data': 'categories:${_product.cat_id}'},
-            ],
+                {'text': 'Menu', 'data': 'categories:${_product.cat_id}'},
+              ],
 //            'qty': List.generate(
 //                5,
 //                (index) => {
@@ -89,22 +116,24 @@ class CategoryCallbackHandler {
 //                      'data':
 //                          'qty:${_product.cat_id}:${_product.product_id}:${index + 1}'
 //                    })
-          };
+            };
 
-          await ReplySender(
-                  port: port,
-                  chatId: chatId,
-                  botUrl: _botUrl,
-                  text: "<strong> <u>${_product.product_name}.</u></strong> \n\n"
-                      "  ${_product.description.padLeft(10, '  ')}\n\n"
-                      "<b>Duration: ${_product.duration} Hours.</b>\n\n"
-                      "<b>Priests: ${_product.priests}.</b>\n\n"
-                      "<b><i>Rs. ${_product.product_price}/- </i></b>\n",
+            await ReplySender(
+                    port: port,
+                    chatId: chatId,
+                    botUrl: _botUrl,
+                    text:
+                        "<strong> <u>${_product.product_name}.</u></strong> \n\n"
+                        "  ${_product.description.padLeft(10, '  ')}\n\n"
+                        "<b>Duration: ${_product.duration} Hours.</b>\n\n"
+                        "<b>Priests: ${_product.priests}.</b>\n\n"
+                        "<b><i>Rs. ${_product.product_price}/- </i></b>\n",
 //                      "<b><i>Rs. ${_product.product_price * qty}/- </i></b>\n",
 //                      "Quantity: ${_product.product_qty*qty} \n"
 //                      "You could also choose quantity 🔢",
-                  buttons: ProductTile(product_buttons).generateButtons())
-              .sendReply();
+                    buttons: ProductTile(product_buttons).generateButtons())
+                .sendReply();
+          }
         }).catchError((error) => print('error at category_handler: ${error}'));
         await database.close();
       }

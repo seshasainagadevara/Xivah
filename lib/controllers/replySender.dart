@@ -20,15 +20,15 @@ class ReplySender {
     this.buttons,
     this.port,
     this.botUrl,
-    //  this.reply_keyboard_buttons
+    //this.reply_keyboard_buttons
   }) {
     botUrl += '/sendMessage';
     _messageData = SendMessageData(chatId, text,
-        parse_mode: MsgParseMode.HTML, keyboard: buttons==null?null:InlineKeyboard(buttons)
-        //buttons == null
-        // ? ReplyKeyboard(reply_keyboard_buttons, one_time_keyboard: true)
-        //    :
-        );
+        parse_mode: MsgParseMode.HTML,
+        keyboard: buttons == null
+            ? null
+            //    ? ReplyKeyboard(reply_keyboard_buttons)
+            : InlineKeyboard(buttons));
   }
 
   Future<void> sendReply() async {
